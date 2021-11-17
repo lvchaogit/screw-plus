@@ -10,7 +10,7 @@
 &emsp;&emsp;于是我通过在Word模板中添加“自定义标签占位符”，然后由程序去解析，替换成相应的ftl标签，生成模板，然后生成文档；通过该方式，尽量减低自定义模板的技术难度；使用者不必去关心freemarker相关技术（建议了解一下），从而提高文档编写效率；<br/>
 
 ## 基本流程图
-![处理流程图](https://user-images.githubusercontent.com/23471936/142209001-f9f19348-43f3-4ba0-a7b7-4b4dab906b5b.png)
+![处理流程](https://user-images.githubusercontent.com/23471936/142209143-894f0237-1f53-4381-9952-572bdad2678a.png)
 
 ## 特点（基于screw扩展）
 
