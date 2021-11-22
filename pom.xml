@@ -7,7 +7,7 @@
     <groupId>cn.smallbun.screw</groupId>
     <artifactId>screw-plus</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
     <inceptionYear>2021</inceptionYear>
     <name>screw-plus</name>
     <description>简洁好用的数据库表结构文档生成工具</description>

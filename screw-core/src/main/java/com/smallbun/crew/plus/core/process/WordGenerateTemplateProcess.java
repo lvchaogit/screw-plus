@@ -13,7 +13,6 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Namespace;
-import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
 /**
@@ -63,9 +62,7 @@ public class WordGenerateTemplateProcess implements GenerateTemplateProcess {
         List<InfoElementTagEnum> cacheElement = new ArrayList<>(InfoElementTagEnum.values().length);
         document.getRootElement().addNamespace("w", "http://schemas.openxmlformats.org/wordprocessingml/2006/main");
         addTagByText(document, cacheElement);
-        log.info("进准文本替换后：{}", document.asXML());
-        addInfoTag(document, cacheElement);
-        log.info("范围文本替换后：{}", document.asXML());
+        log.info("精准文本替换后：{}", document.asXML());
         document.getRootElement().remove(
             new Namespace("w", "http://schemas.openxmlformats.org/wordprocessingml/2006/main"));
         return replaceTag2FtlTag(document.asXML(), cacheElement);
@@ -170,29 +167,6 @@ public class WordGenerateTemplateProcess implements GenerateTemplateProcess {
      *
      * @param document 文档对象
      */
-    private void addInfoTag(Document document, List<InfoElementTagEnum> cacheElement) {
-        List<Element> pNode = (List)document.selectNodes("//w:p");
-        for (Element node : pNode) {
-            if (StringUtils.isNotEmpty(node.getStringValue())) {
-                for (InfoElementTagEnum tagEnum : InfoElementTagEnum.values()) {
-                    if (cacheElement.contains(tagEnum)) {
-                        continue;
-                    }
-                    if (node.getStringValue().toLowerCase().contains(tagEnum.getCode().toLowerCase())) {
-                        List<Node> elepar = node.getParent().content();
-                        elepar.set(elepar.indexOf(node), createElement(tagEnum.getCode()));
-                    }
-                }
-            }
-        }
-    }
-
-
-    /**
-     * 添加字段信息标签
-     *
-     * @param document 文档对象
-     */
     private void addTagByText(Document document, List<InfoElementTagEnum> cacheElement) {
         List<Element> pNodes = (List)document.selectNodes("//w:p");
         StringBuffer text = new StringBuffer();
@@ -203,11 +177,13 @@ public class WordGenerateTemplateProcess implements GenerateTemplateProcess {
                 text.append(eNode.getText());
                 if (StringUtils.isNotEmpty(text)) {
                     for (InfoElementTagEnum tagEnum : InfoElementTagEnum.values()) {
-                        if (text.toString().toLowerCase().contains(tagEnum.getCode().toLowerCase())) {
+                        String customText = text.toString().toLowerCase();
+                        String tagText = tagEnum.getCode().toLowerCase();
+                        if (customText.contains(tagText)) {
                             for (Element textNode : textNodes) {
                                 textNode.getParent().remove(textNode);
                             }
-                            eNode.setText("");
+                            eNode.setText(customText.split(tagText).length > 0 ? customText.split(tagText)[0] : "");
                             eNode.add(createElement(tagEnum.getCode()));
                             cacheElement.add(tagEnum);
                             text = new StringBuffer();
