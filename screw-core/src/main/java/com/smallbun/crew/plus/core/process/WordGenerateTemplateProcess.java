@@ -187,23 +187,41 @@ public class WordGenerateTemplateProcess implements GenerateTemplateProcess {
         }
     }
 
+
     /**
      * 添加字段信息标签
      *
      * @param document 文档对象
      */
     private void addTagByText(Document document, List<InfoElementTagEnum> cacheElement) {
-        List<Element> pNode = (List)document.selectNodes("//w:t");
-        for (Element node : pNode) {
-            if (StringUtils.isNotEmpty(node.getStringValue())) {
-                for (InfoElementTagEnum tagEnum : InfoElementTagEnum.values()) {
-                    if (node.getText().toLowerCase().contains(tagEnum.getCode().toLowerCase())) {
-                        node.setText("");
-                        node.add(createElement(tagEnum.getCode()));
-                        cacheElement.add(tagEnum);
+        List<Element> pNodes = (List)document.selectNodes("//w:p");
+        StringBuffer text = new StringBuffer();
+        List<Element> textNodes = new ArrayList<>();
+        for (Element pNode : pNodes) {
+            List<Element> eNodes = (List)pNode.selectNodes("child::*/child::w:t");
+            for (Element eNode : eNodes) {
+                text.append(eNode.getText());
+                if (StringUtils.isNotEmpty(text)) {
+                    for (InfoElementTagEnum tagEnum : InfoElementTagEnum.values()) {
+                        if (text.toString().toLowerCase().contains(tagEnum.getCode().toLowerCase())) {
+                            for (Element textNode : textNodes) {
+                                textNode.getParent().remove(textNode);
+                            }
+                            eNode.setText("");
+                            eNode.add(createElement(tagEnum.getCode()));
+                            cacheElement.add(tagEnum);
+                            text = new StringBuffer();
+                            textNodes.clear();
+                        }
                     }
                 }
+                if (text.length() > 0) {
+                    textNodes.add(eNode);
+                }
             }
+            text = new StringBuffer();
+            textNodes.clear();
+
         }
     }
 
